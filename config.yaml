@@ -27,3 +27,6 @@ discordBotToken: "ODA1KDS7MzkyMDE8TTk0MDE2.UUWNEg.14wlVKNw5ISdAS2zT3N-b0dOIsN"
 slackEnabled: true
 slackToken: "xoxb-xxxxxxxx-xxxxxxxxxxxxx-xxxxxxxxxxxxxxx"
 slackChannelID: "CXXXXXXXXXX"
+
+# Options
+maxMessageLength: 3000

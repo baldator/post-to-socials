@@ -21,6 +21,7 @@ type ConfigVars struct {
 	SlackEnabled             bool   `yaml:"slackEnabled" env:"SLACK-ENABLE" env-default:"false"`
 	SlackToken               string `yaml:"slackToken" env:"SLACK-TOKEN" env-default:""`
 	SlackChannelID           string `yaml:"slackChannelID" env:"SLACK-CHANNEL-ID" env-default:""`
+	MaxMessageLength         int    `yaml:"maxMessageLength" env:"MAX-MESSAGE-length" env-default:"3000"`
 }
 
 //"config.yml"

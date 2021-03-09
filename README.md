@@ -41,6 +41,8 @@ discordBotToken => Discord bot token e.g "XD1MTE2MzkyMDE3NDk0MDE2.YFFNEg.14wlVKN
 slackEnabled    => true if you want to enable Slack, false otherwise
 slackToken      => Slack token
 slackChannelID  => Slack channel ID
+
+maxMessageLength => Limit message lenght to the defined value. If message is longer it won't be sent. Default value is 3000
 ```
 
 To help with deployment on cloud hosting providers, the config also supports Environment (ENV) variables. 

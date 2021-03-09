@@ -47,7 +47,7 @@ func writeResult(w http.ResponseWriter, status string) {
 	}
 }
 
-func validate(w http.ResponseWriter, r *http.Request, creds map[string]string) (bool, string) {
+func validate(w http.ResponseWriter, r *http.Request, creds map[string]string, maxLength int) (bool, string) {
 	if r.Method != http.MethodPost {
 		writeResult(w, "method_error")
 		return false, ""
@@ -77,6 +77,12 @@ func validate(w http.ResponseWriter, r *http.Request, creds map[string]string) (
 	err := decoder.Decode(&m)
 	if err != nil {
 		log.Errorf("Error decoding msg body: %s", err.Error())
+		writeResult(w, "json_error")
+		return false, ""
+	}
+
+	if len(m.Msg) > 140 || len(m.Msg) == 0 {
+		log.Errorf("Error msg body longer than the max length (%d). Message length: %d >> '%s'", maxLength, len(m.Msg), m.Msg)
 		writeResult(w, "json_error")
 		return false, ""
 	}
@@ -168,7 +174,7 @@ func startService(conf ConfigVars, creds map[string]string) {
 	if conf.TwitterEnabled {
 		router.HandleFunc("/send/twitter", func(w http.ResponseWriter, r *http.Request) {
 			log.Info("/send/twitter")
-			valid, msg := validate(w, r, creds)
+			valid, msg := validate(w, r, creds, conf.MaxMessageLength)
 			validTwitter := validateTwitter(w, msg)
 			if valid && validTwitter {
 				err := twitter.Send(msg)
@@ -184,7 +190,7 @@ func startService(conf ConfigVars, creds map[string]string) {
 	if conf.DiscordEnabled {
 		router.HandleFunc("/send/discord", func(w http.ResponseWriter, r *http.Request) {
 			log.Info("/send/discord")
-			valid, msg := validate(w, r, creds)
+			valid, msg := validate(w, r, creds, conf.MaxMessageLength)
 			if valid {
 				err := discord.Send(msg)
 				if err != nil {
@@ -199,7 +205,7 @@ func startService(conf ConfigVars, creds map[string]string) {
 	if conf.TelegramEnabled {
 		router.HandleFunc("/send/telegram", func(w http.ResponseWriter, r *http.Request) {
 			log.Info("/send/telegram")
-			valid, msg := validate(w, r, creds)
+			valid, msg := validate(w, r, creds, conf.MaxMessageLength)
 			if valid {
 				err := telegram.Send(msg)
 				if err != nil {
@@ -214,7 +220,7 @@ func startService(conf ConfigVars, creds map[string]string) {
 	if conf.SlackEnabled {
 		router.HandleFunc("/send/slack", func(w http.ResponseWriter, r *http.Request) {
 			log.Info("/send/slack")
-			valid, msg := validate(w, r, creds)
+			valid, msg := validate(w, r, creds, conf.MaxMessageLength)
 			if valid {
 				err := slack.Send(msg)
 				if err != nil {
@@ -228,7 +234,7 @@ func startService(conf ConfigVars, creds map[string]string) {
 	}
 	router.HandleFunc("/send/all", func(w http.ResponseWriter, r *http.Request) {
 		log.Info("/send/all")
-		valid, msg := validate(w, r, creds)
+		valid, msg := validate(w, r, creds, conf.MaxMessageLength)
 		if valid {
 			errors := 0
 			var err error
