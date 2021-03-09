@@ -81,7 +81,7 @@ func validate(w http.ResponseWriter, r *http.Request, creds map[string]string, m
 		return false, ""
 	}
 
-	if len(m.Msg) > 140 || len(m.Msg) == 0 {
+	if len(m.Msg) > maxLength || len(m.Msg) == 0 {
 		log.Errorf("Error msg body longer than the max length (%d). Message length: %d >> '%s'", maxLength, len(m.Msg), m.Msg)
 		writeResult(w, "json_error")
 		return false, ""
